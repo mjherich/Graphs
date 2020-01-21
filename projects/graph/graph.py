@@ -65,10 +65,10 @@ class Graph:
         # Loop until we have visited all vertices
         while s.size() > 0:
             vertex = s.pop()
-            visited.add(vertex)
-            print(vertex)
-            for v in self.vertices[vertex]:
-                if v not in visited:
+            if vertex not in visited:
+                visited.add(vertex)
+                print(vertex)
+                for v in self.vertices[vertex]:
                     s.push(v)
 
     def dft_recursive(self, starting_vertex):
