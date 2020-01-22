@@ -1,3 +1,6 @@
+import random
+import names
+import itertools
 class User:
     def __init__(self, name):
         self.name = name
@@ -44,9 +47,25 @@ class SocialGraph:
         self.friendships = {}
         # !!!! IMPLEMENT ME
 
+        if num_users < avg_friendships:
+            raise Exception("num_users must be greater than avg_friendships")
         # Add users
-
+        for _ in range(num_users):
+            # Add a user with a random name
+            self.add_user(names.get_full_name())
+            
         # Create friendships
+        combos = list(itertools.combinations(self.users.keys(), 2))
+        # Shuffle all potential friendships
+        random.shuffle(combos)
+        i = 0
+        combo_i = 1
+        while i <= (num_users * avg_friendships)/2:
+            user_id, friend_id = combos[combo_i]
+            if friend_id not in self.friendships[user_id]:
+                self.add_friendship(user_id, friend_id)
+                i += 1
+            combo_i += 1
 
     def get_all_social_paths(self, user_id):
         """
