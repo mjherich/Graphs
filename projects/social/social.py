@@ -1,6 +1,7 @@
 import random
 import names
 import itertools
+from util import Queue
 class User:
     def __init__(self, name):
         self.name = name
@@ -78,12 +79,25 @@ class SocialGraph:
         """
         visited = {}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
+        # The shortest path to the input is trivial
+        visited[user_id] = [user_id]
+        # Create a queue for storing user_ids to traverse
+        q = Queue()
+        q.enqueue([user_id])
+        while q.size() > 0:
+            user_path = q.dequeue()
+            last_user = user_path[-1]
+            for friend in self.friendships[last_user]:
+                if friend not in visited:
+                    new_path = list(user_path) + [friend]
+                    q.enqueue(new_path)
+                    visited[friend] = new_path
         return visited
 
 
 if __name__ == '__main__':
     sg = SocialGraph()
     sg.populate_graph(10, 2)
-    print(sg.friendships)
+    print(f"Friendships: {sg.friendships}")
     connections = sg.get_all_social_paths(1)
-    print(connections)
+    print(f"Connections: \n {connections}")
