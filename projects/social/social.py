@@ -1,6 +1,7 @@
 import random
 import names
 import itertools
+import time
 from util import Queue
 class User:
     def __init__(self, name):
@@ -42,6 +43,7 @@ class SocialGraph:
 
         The number of users must be greater than the average number of friendships.
         """
+        start = time.time()
         # Reset graph
         self.last_id = 0
         self.users = {}
@@ -57,6 +59,7 @@ class SocialGraph:
             
         # Create friendships
         combos = list(itertools.combinations(self.users.keys(), 2))
+        print(f"itertools time: {time.time() - start} seconds")
         # Shuffle all potential friendships
         random.shuffle(combos)
         i = 0
@@ -67,6 +70,7 @@ class SocialGraph:
                 self.add_friendship(user_id, friend_id)
                 i += 1
             combo_i += 1
+        print(f"Populating the graph took: {time.time() - start} seconds")
 
     def get_all_social_paths(self, user_id):
         """
@@ -98,9 +102,9 @@ class SocialGraph:
 if __name__ == '__main__':
     sg = SocialGraph()
     sg.populate_graph(1000, 5)
-    print(f"Friendships: {sg.friendships}")
+    # print(f"Friendships: {sg.friendships}")
     connections = sg.get_all_social_paths(1)
-    print(f"Connections: \n {connections}")
+    # print(f"Connections: \n {connections}")
     # Find percentage of users in user's extended network...
     extended_connections = [connections[c] for c in connections if len(connections[c]) > 2]
     print(f"Percentage of extended connections: {(len(extended_connections) / 1000)*100}%")
