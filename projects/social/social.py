@@ -19,11 +19,14 @@ class SocialGraph:
         """
         if user_id == friend_id:
             print("WARNING: You cannot be friends with yourself")
+            return False
         elif friend_id in self.friendships[user_id] or user_id in self.friendships[friend_id]:
             print("WARNING: Friendship already exists")
+            return False
         else:
             self.friendships[user_id].add(friend_id)
             self.friendships[friend_id].add(user_id)
+            return True
 
     def add_user(self, name):
         """
@@ -58,18 +61,14 @@ class SocialGraph:
             self.add_user(names.get_full_name())
             
         # Create friendships
-        combos = list(itertools.combinations(self.users.keys(), 2))
-        print(f"itertools time: {time.time() - start} seconds")
-        # Shuffle all potential friendships
-        random.shuffle(combos)
-        i = 0
-        combo_i = 1
-        while i <= (num_users * avg_friendships)/2:
-            user_id, friend_id = combos[combo_i]
-            if friend_id not in self.friendships[user_id]:
-                self.add_friendship(user_id, friend_id)
-                i += 1
-            combo_i += 1
+        total_friendships = 0
+        while total_friendships < num_users * avg_friendships:
+            # Create random friendship
+            user_id = random.randint(1, self.last_id)
+            friend_id = random.randint(1, self.last_id)
+            is_created = self.add_friendship(user_id, friend_id)
+            if is_created:
+                total_friendships += 2
         print(f"Populating the graph took: {time.time() - start} seconds")
 
     def get_all_social_paths(self, user_id):
@@ -101,10 +100,10 @@ class SocialGraph:
 
 if __name__ == '__main__':
     sg = SocialGraph()
-    sg.populate_graph(1000, 5)
-    # print(f"Friendships: {sg.friendships}")
+    sg.populate_graph(5, 2)
+    print(f"Friendships: \n{sg.friendships}")
     connections = sg.get_all_social_paths(1)
-    # print(f"Connections: \n {connections}")
+    print(f"Connections: \n{connections}")
     # Find percentage of users in user's extended network...
     extended_connections = [connections[c] for c in connections if len(connections[c]) > 2]
     print(f"Percentage of extended connections: {(len(extended_connections) / 1000)*100}%")
