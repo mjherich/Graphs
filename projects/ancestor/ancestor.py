@@ -21,21 +21,21 @@ def earliest_ancestor(ancestors, starting_node):
     q = Queue()
     # Add starging node
     q.enqueue([starting_node, 0])
-    # Keep track of people who've been processed and the distance they are from the starting_node
-    processed_ancestors = {}
+    # Keep track of earliest ancestor so far and how deep we are in the traversal
+    earliest_ancestor = None
+    earliest_ancestor_lvl = -1
     while q.size() > 0:
         person, distance = q.dequeue()
         # append the person to processed in the form processed_ancestors[distance] = [...people]
-        if distance in processed_ancestors:
-            processed_ancestors[distance].append(person)
-        else:
-            processed_ancestors[distance] = [person]
+        if distance > earliest_ancestor_lvl:
+            earliest_ancestor = person
+            earliest_ancestor_lvl = distance
+        elif distance == earliest_ancestor_lvl:
+            earliest_ancestor = min(earliest_ancestor, person)
         # Get ancestors of person
         a = graph.get_neighbors(person)
         if len(a) > 0:
             for p in a:
                 q.enqueue([p, distance + 1])
         
-    # Find biggest key and return smallest id based on that key
-    max_distance = max(processed_ancestors.keys())
-    return min(processed_ancestors[max_distance])
+    return earliest_ancestor
